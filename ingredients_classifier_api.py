@@ -8,16 +8,25 @@ import json
 MODEL_DIR = "model/ingredients-distilbert-classifier"
 LABEL_MAPPING_PATH = "model/labels_mapping.json"
 
-# Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR,local_files_only=True)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, local_files_only=True)
-model.eval()
-
-# Load label mapping
-with open(LABEL_MAPPING_PATH, "r") as f:
-    id2label = {int(k): v for k, v in json.load(f).items()}
-
 app = FastAPI(title="Ingredients Classifier API")
+
+# Global variables (empty until startup)
+tokenizer = None
+model = None
+id2label = None
+
+@app.on_event("startup")
+def load_model():
+    global tokenizer, model, id2label
+
+    # Load tokenizer and model ONLY from local files
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, local_files_only=True)
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, local_files_only=True)
+    model.eval()
+
+    # Load label mapping
+    with open(LABEL_MAPPING_PATH, "r") as f:
+        id2label = {int(k): v for k, v in json.load(f).items()}
 
 class IngredientsRequest(BaseModel):
     ingredients: str
