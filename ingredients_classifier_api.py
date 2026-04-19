@@ -19,14 +19,19 @@ id2label = None
 def load_model():
     global tokenizer, model, id2label
 
-    # Load tokenizer and model ONLY from local files
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, local_files_only=True)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, local_files_only=True)
-    model.eval()
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, local_files_only=True)
+        model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, local_files_only=True)
+        model.eval()
 
-    # Load label mapping
-    with open(LABEL_MAPPING_PATH, "r") as f:
-        id2label = {int(k): v for k, v in json.load(f).items()}
+        with open(LABEL_MAPPING_PATH, "r") as f:
+            id2label = {int(k): v for k, v in json.load(f).items()}
+
+        print("Model loaded successfully.")
+
+    except Exception as e:
+        print("⚠ WARNING: Model not loaded. Upload model files via Render Shell.")
+        print(e)
 
 class IngredientsRequest(BaseModel):
     ingredients: str
