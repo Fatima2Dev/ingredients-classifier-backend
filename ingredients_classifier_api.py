@@ -9,8 +9,8 @@ MODEL_DIR = "model/ingredients-distilbert-classifier"
 LABEL_MAPPING_PATH = "model/labels_mapping.json"
 
 # Load tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR,local_files_only=True)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, local_files_only=True)
 model.eval()
 
 # Load label mapping
